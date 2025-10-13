@@ -1,90 +1,119 @@
 <template>
   <div class="p-6">
-    <!--  Search input -->
-    <input
-      v-model="query"
-      type="text"
-      placeholder="Search icons (e.g. home, house...)"
-      class="focus:outline-none w-full mb-10 p-3 border border-gray-300 rounded-lg max-w-lg mx-auto block"
-    />
+    <!-- Search -->
+    <div class="mb-6 flex justify-center">
+      <input
+        v-model="search"
+        type="text"
+        placeholder="Search icons..."
+        class="input input-bordered w-full max-w-md"
+      />
+    </div>
 
-     <!-- Icons grid  -->
+    <!-- Icons grid -->
     <div
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"
     >
       <div
-        v-for="(path, name) in filteredIcons"
+        v-for="(icon, name) in filteredIcons"
         :key="name"
-        class="flex flex-col items-center p-3 rounded-xl hover:bg-gray-100 transition cursor-pointer"
+        class="relative flex flex-col items-center p-3 rounded-xl hover:bg-gray-100 transition cursor-pointer"
         @click="copyIcon(name)"
       >
-        <img :src="path" :alt="name" class="w-10 h-10 mb-2" />
+        <img :src="icon.url" :alt="name" class="w-10 h-10 mb-2" />
         <span class="text-sm text-gray-600">{{ name }}</span>
+
+        <!-- Smooth “Copied!” indicator -->
+        <transition name="fade">
+          <div
+            v-if="copiedIcon === name"
+            class="absolute bottom-2 bg-black text-white text-xs px-2 py-1 rounded-md shadow-lg"
+          >
+            Copied!
+          </div>
+        </transition>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from "vue";
 
-/* -------------------------------------------------------------------------- */
-/* 🔹 1. Load all SVG icons dynamically from /public/iconates                 */
-/* -------------------------------------------------------------------------- */
-const svgFiles = import.meta.glob('/public/iconates/*.svg', {
-  eager: true,
-  import: 'default'
-})
+const GITHUB_USER = "tahaanz7";
+const REPO = "iconates-icons";
+const BRANCH = "main";
 
-const icons = Object.fromEntries(
-  Object.entries(svgFiles).map(([path]) => {
-    const name = path.split('/').pop().replace('.svg', '')
-    return [name, `/iconates/${name}.svg`]
-  })
-)
+const icons = ref({});
+const metadata = ref({});
+const search = ref("");
+const copiedIcon = ref(null);
 
-/* -------------------------------------------------------------------------- */
-/* 🔹 2. Load all JSON metadata files (name, synonyms, category, etc.)        */
-/* -------------------------------------------------------------------------- */
-const metadataFiles = import.meta.glob('/public/iconates/*.json', {
-  eager: true
-})
+// Fetch icons and metadata
+onMounted(async () => {
+  try {
+    const metaRes = await fetch(
+      `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO}/${BRANCH}/metadata.json`
+    );
+    metadata.value = await metaRes.json();
 
-const metadata = Object.fromEntries(
-  Object.entries(metadataFiles).map(([path, mod]) => {
-    const name = path.split('/').pop().replace('.json', '')
-    return [name, mod.default || mod]
-  })
-)
+    const iconsList = Object.keys(metadata.value);
+    icons.value = Object.fromEntries(
+      iconsList.map((name) => [
+        name,
+        {
+          url: `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO}/${BRANCH}/dist_iconates/${name}.svg`,
+        },
+      ])
+    );
+  } catch (error) {
+    console.error("Error loading icons:", error);
+  }
+});
 
-/* -------------------------------------------------------------------------- */
-/* 🔹 3. Search input state                                                   */
-/* -------------------------------------------------------------------------- */
-const query = ref('')
-
-/* -------------------------------------------------------------------------- */
-/* 🔹 4. Computed filtered list of icons                                      */
-/* -------------------------------------------------------------------------- */
+// Filter icons
 const filteredIcons = computed(() => {
-  const q = query.value.trim().toLowerCase()
-  if (!q) return icons
+  const query = search.value.toLowerCase();
+  if (!query) return icons.value;
 
-  // Return icons whose name OR synonyms include the query
   return Object.fromEntries(
-    Object.entries(icons).filter(([name]) => {
-      const data = metadata[name] || {}
-      const allTerms = [name, ...(data.synonyms || [])]
-      return allTerms.some(term => term.toLowerCase().includes(q))
+    Object.entries(icons.value).filter(([name]) => {
+      const meta = metadata.value[name] || {};
+      const synonyms = meta.synonyms || [];
+      return (
+        name.toLowerCase().includes(query) ||
+        synonyms.some((s) => s.toLowerCase().includes(query))
+      );
     })
-  )
-})
+  );
+});
 
-/* -------------------------------------------------------------------------- */
-/* 🔹 5. Copy icon code to clipboard                                          */
-/* -------------------------------------------------------------------------- */
-function copyIcon(name) {
-  const path = icons[name]
-  navigator.clipboard.writeText(`<img src="${path}" alt="${name}" />`)
-  alert(`Copied ${name} SVG code!`)
+// Copy icon SVG
+async function copyIcon(name) {
+  const path = icons.value[name].url;
+
+  try {
+    const res = await fetch(path);
+    const svg = await res.text();
+    await navigator.clipboard.writeText(svg);
+
+    // Show smooth “Copied!” message
+    copiedIcon.value = name;
+    setTimeout(() => (copiedIcon.value = null), 700);
+  } catch (err) {
+    console.error("Error copying icon:", err);
+  }
 }
 </script>
+
+<style scoped>
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

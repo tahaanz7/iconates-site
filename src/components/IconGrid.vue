@@ -1,12 +1,12 @@
 <template>
   <div class="p-6">
     <!-- Search -->
-    <div class="mb-6 flex justify-center">
+    <div class="mb-8 flex justify-center">
       <input
         v-model="search"
         type="text"
         placeholder="Search icons..."
-        class="input input-bordered w-full max-w-md"
+        class="input input-bordered w-full max-w-md rounded-lg"
       />
     </div>
 
@@ -99,7 +99,7 @@ async function copyIcon(name) {
 
     // Show smooth “Copied!” message
     copiedIcon.value = name;
-    setTimeout(() => (copiedIcon.value = null), 700);
+    setTimeout(() => (copiedIcon.value = null), 500);
   } catch (err) {
     console.error("Error copying icon:", err);
   }

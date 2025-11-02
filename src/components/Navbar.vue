@@ -4,7 +4,7 @@
       class="max-w-6xl mx-auto flex justify-between items-center border-b border-gray-200 pb-4"
     >
       <RouterLink to="/"
-        ><h1 class="text-2xl font-bold">ICONATES</h1></RouterLink
+        ><img src="../../public/logos/brand logo.svg" alt="iconates logo" class="w-55"></RouterLink
       >
       <ul class="flex gap-4 text-gray-600 items-center font-semibold">
         <li><RouterLink to="/license">License</RouterLink></li>

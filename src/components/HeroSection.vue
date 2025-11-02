@@ -1,10 +1,10 @@
 <template>
   <section class="text-center py-16 sm:py-20 md:py-24 px-6 sm:px-10">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">
-      Iconates, Mezyanines, ou Open-Source
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold mb- leading-tight special-text">
+      iconates, mezyanines, ou open-source
     </h1>
 
-    <p class="text-gray-600 mb-10 max-w-2xl mx-auto text-base sm:text-lg">
+    <p class="text-gray-600 mb-6 max-w-2xl mx-auto text-base sm:text-lg">
       Iconates offers a growing collection of simple and elegant SVG icons
       designed for developers and designers.
     </p>
@@ -51,3 +51,9 @@
     </div>
   </section>
 </template>
+
+<style>
+.special-text {
+  font-family: 'Rokkitt', serif;
+}
+</style>

@@ -1,7 +1,9 @@
 <template>
   <section class="text-center py-16 sm:py-20 md:py-24 px-6 sm:px-10">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold mb- leading-tight special-text">
-      iconates, mezyanines, ou open-source
+    <h1
+      class="text-3xl sm:text-4xl md:text-5xl font-semibold mb- leading-tight special-text"
+    >
+      iconates, for designers & developers.
     </h1>
 
     <p class="text-gray-600 mb-6 max-w-2xl mx-auto text-base sm:text-lg">
@@ -54,6 +56,6 @@
 
 <style>
 .special-text {
-  font-family: 'Rokkitt', serif;
+  font-family: "Rokkitt", serif;
 }
 </style>

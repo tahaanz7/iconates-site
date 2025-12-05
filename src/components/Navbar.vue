@@ -5,9 +5,9 @@
     >
       <RouterLink to="/">
         <img
-          src="../../public/logos/brand logo.svg"
+          src="../../public/logos/iconates_logo.svg"
           alt="iconates logo"
-          class="w-32 sm:w-40 md:w-48 lg:w-55"
+          class="w-28 sm:w-40 md:w-48 lg:w-40"
         />
       </RouterLink>
       <ul class="flex gap-4 text-gray-600 items-center font-semibold">
